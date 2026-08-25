@@ -17,20 +17,31 @@ export default function Register() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+        <div 
+            className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-cover bg-center"
+            style={{ backgroundImage: 'url("/realestate.jpg")' }}
+        >
+            {/* Back to Home — floating top-left corner */}
+            <Link
+                href="/"
+                className="absolute top-5 left-6 flex items-center gap-2 text-white/80 text-sm font-semibold hover:text-white transition group z-10"
+            >
+                <span className="text-lg group-hover:-translate-x-1 transition-transform inline-block">←</span>
+                Back to Home
+            </Link>
             <Head title="Register" />
             
-            <div className="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div className="w-full sm:max-w-md mt-6 px-6 py-8 bg-white/30 backdrop-blur-md border border-white/40 shadow-xl overflow-hidden sm:rounded-xl">
                 <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Register</h2>
 
                 <form onSubmit={submit}>
                     <div>
-                        <label htmlFor="name" className="block font-medium text-sm text-gray-700">Name</label>
+                        <label htmlFor="name" className="block font-medium text-sm text-gray-800">Name</label>
                         <input
                             id="name"
                             name="name"
                             value={data.name}
-                            className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full p-2 border"
+                            className="bg-white border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full p-2 border"
                             autoComplete="name"
                             onChange={(e) => setData('name', e.target.value)}
                             required
@@ -39,13 +50,13 @@ export default function Register() {
                     </div>
 
                     <div className="mt-4">
-                        <label htmlFor="email" className="block font-medium text-sm text-gray-700">Email</label>
+                        <label htmlFor="email" className="block font-medium text-sm text-gray-800">Email</label>
                         <input
                             id="email"
                             type="email"
                             name="email"
                             value={data.email}
-                            className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full p-2 border"
+                            className="bg-white border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full p-2 border"
                             autoComplete="username"
                             onChange={(e) => setData('email', e.target.value)}
                             required
@@ -54,13 +65,13 @@ export default function Register() {
                     </div>
 
                     <div className="mt-4">
-                        <label htmlFor="password" className="block font-medium text-sm text-gray-700">Password</label>
+                        <label htmlFor="password" className="block font-medium text-sm text-gray-800">Password</label>
                         <input
                             id="password"
                             type="password"
                             name="password"
                             value={data.password}
-                            className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full p-2 border"
+                            className="bg-white border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full p-2 border"
                             autoComplete="new-password"
                             onChange={(e) => setData('password', e.target.value)}
                             required
@@ -69,13 +80,13 @@ export default function Register() {
                     </div>
 
                     <div className="mt-4">
-                        <label htmlFor="password_confirmation" className="block font-medium text-sm text-gray-700">Confirm Password</label>
+                        <label htmlFor="password_confirmation" className="block font-medium text-sm text-gray-800">Confirm Password</label>
                         <input
                             id="password_confirmation"
                             type="password"
                             name="password_confirmation"
                             value={data.password_confirmation}
-                            className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full p-2 border"
+                            className="bg-white border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full p-2 border"
                             autoComplete="new-password"
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                             required
@@ -86,7 +97,7 @@ export default function Register() {
                     <div className="flex items-center justify-between mt-6">
                         <Link
                             href="/login"
-                            className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="underline text-sm text-gray-800 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
                             Already registered?
                         </Link>
