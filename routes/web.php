@@ -1,9 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\OtpController;
 
 Route::inertia('/', 'welcome')->name('home');
-use App\Http\Controllers\AuthController;
+
+// OTP — no guest middleware on verify so the post always goes through
+Route::get('otp', [OtpController::class, 'show'])->name('otp.show');
+Route::post('otp', [OtpController::class, 'verify'])->name('otp.verify');
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'showLogin'])->name('login');

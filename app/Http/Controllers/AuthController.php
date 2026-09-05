@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OtpMail;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -18,19 +18,30 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
+        $request->validate([
+            'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return back()
+                ->withErrors(['email' => 'The provided credentials do not match our records.'])
+                ->onlyInput('email');
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+        // Generate and save OTP
+        $user->otp_code       = random_int(100000, 999999);
+        $user->otp_expires_at = now()->addMinutes(3);
+        $user->otp_attempts   = 0;
+        $user->save();
+
+        Mail::to($user->email)->send(new OtpMail($user->otp_code));
+
+        $request->session()->put('login_email', $user->email);
+
+        return Inertia::location(route('otp.show'));
     }
 
     public function showRegister()
@@ -41,27 +52,36 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user);
+        // Generate and save OTP
+        $user->otp_code       = random_int(100000, 999999);
+        $user->otp_expires_at = now()->addMinutes(5);
+        $user->otp_attempts   = 0;
+        $user->save();
 
-        return redirect('/dashboard');
+        Mail::to($user->email)->send(new OtpMail($user->otp_code));
+
+        $request->session()->put('login_email', $user->email);
+
+        return Inertia::location(route('otp.show'));
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        \Illuminate\Support\Facades\Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/');
     }
 }
