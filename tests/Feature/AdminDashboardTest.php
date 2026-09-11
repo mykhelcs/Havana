@@ -10,12 +10,12 @@ uses(RefreshDatabase::class);
 
 it('renders the admin dashboard with stats', function () {
     $admin = User::factory()->create([
-        'role' => UserRole::ADMIN,
+        'user_role' => UserRole::ADMIN,
     ]);
 
     // Create a buyer user
     User::factory()->create([
-        'role' => UserRole::BUYER,
+        'user_role' => UserRole::BUYER,
     ]);
 
     DB::table('properties')->insert([
