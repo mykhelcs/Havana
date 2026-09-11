@@ -82,6 +82,15 @@ class UserController extends Controller
     }
 
     /**
+     * create(): Renders the create-user form.
+     * No DB queries — just returns the blank form page.
+     */
+    public function create(): Response
+    {
+        return Inertia::render('Admin/Users/Create');
+    }
+
+    /**
      * show(): Single user detail for edit page.
      * O(1) PK lookup. 404 on null — guard clause at top, main path unburied.
      */
