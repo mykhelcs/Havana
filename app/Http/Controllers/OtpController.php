@@ -67,6 +67,21 @@ class OtpController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+        return $this->redirectAfterLogin($user);
+    }
+
+    /**
+     * Determines the post-login destination based on the user's role.
+     * Uses a match expression (O(1) lookup via PHP match table) instead of
+     * if/elseif chains — adding a new role is one line, not a new branch.
+     */
+    private function redirectAfterLogin(\App\Models\User $authenticatedUser): \Illuminate\Http\RedirectResponse
+    {
+        return match ($authenticatedUser->role) {
+            \App\Enums\UserRole::ADMIN => redirect()->intended('/admin'),
+            \App\Enums\UserRole::AGENT => redirect()->intended('/admin'),
+            \App\Enums\UserRole::BUYER => redirect()->intended('/dashboard'),
+            default                    => redirect('/'),
+        };
     }
 }
