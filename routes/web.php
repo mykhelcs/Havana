@@ -20,4 +20,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::inertia('/dashboard', 'Dashboard')->name('dashboard');
+
+    // Admin Routes
+    Route::get('/admin', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('admin.dashboard');
 });
