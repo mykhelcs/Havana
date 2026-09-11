@@ -23,9 +23,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->renameColumn('role', 'user_role');
-            $table->string('status')->default(\App\Enums\UserStatus::ACTIVE->value)->index();
-            $table->timestamp('last_login_at')->nullable();
+            if (Schema::hasColumn('users', 'role') && !Schema::hasColumn('users', 'user_role')) {
+                $table->renameColumn('role', 'user_role');
+            } elseif (Schema::hasColumn('users', 'role') && Schema::hasColumn('users', 'user_role')) {
+                $table->dropColumn('role');
+            } elseif (!Schema::hasColumn('users', 'user_role')) {
+                $table->string('user_role')->default(\App\Enums\UserRole::BUYER->value);
+            }
+
+            if (!Schema::hasColumn('users', 'status')) {
+                $table->string('status')->default(\App\Enums\UserStatus::ACTIVE->value)->index();
+            }
+
+            if (!Schema::hasColumn('users', 'last_login_at')) {
+                $table->timestamp('last_login_at')->nullable();
+            }
         });
     }
 
