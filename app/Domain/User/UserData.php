@@ -5,7 +5,6 @@ namespace App\Domain\User;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use Carbon\Carbon;
-use Symfony\Component\Uid\Ulid;
 
 /**
  * UserData is the canonical internal representation of a platform user.
@@ -13,11 +12,14 @@ use Symfony\Component\Uid\Ulid;
  * All fields are required and typed — no nullable role, no optional id.
  * This makes it impossible to represent a user with an unknown role
  * anywhere in the application after the boundary.
+ *
+ * id is a plain string because Supabase Auth generates UUIDs (not ULIDs).
+ * Legacy rows may also carry integer ids — storing as string handles both.
  */
 readonly class UserData
 {
     public function __construct(
-        public Ulid $id,
+        public string $id,
         public string $email,
         public UserRole $role,        // enum: admin|agent|buyer
         public UserStatus $status,    // enum: active|suspended

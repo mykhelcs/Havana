@@ -9,7 +9,7 @@ class UserResource
     public static function fromDomain(UserData $user): array
     {
         return [
-            'id' => $user->id->toBase32(),
+            'id' => $user->id,
             'email' => $user->email,
             'role' => $user->role->value,
             'status' => $user->status->value,

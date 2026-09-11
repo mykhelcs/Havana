@@ -2,7 +2,6 @@
 
 namespace App\Domain\User;
 
-use Symfony\Component\Uid\Ulid;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -30,7 +29,7 @@ class UserManagementService
         return $this->userRepository->createUser($commandWithPassword);
     }
 
-    public function updateUser(Ulid $adminId, Ulid $targetId, UpdateUserCommand $cmd): UserData|UserManagementError
+    public function updateUser(string $adminId, string $targetId, UpdateUserCommand $cmd): UserData|UserManagementError
     {
         $user = $this->userRepository->findById($targetId);
 
@@ -41,9 +40,9 @@ class UserManagementService
         return $this->userRepository->updateUser($targetId, $cmd);
     }
 
-    public function suspendUser(Ulid $adminId, Ulid $targetId): UserData|UserManagementError
+    public function suspendUser(string $adminId, string $targetId): UserData|UserManagementError
     {
-        if ((string) $adminId === (string) $targetId) {
+        if ($adminId === $targetId) {
             return UserManagementError::CANNOT_SUSPEND_SELF;
         }
 

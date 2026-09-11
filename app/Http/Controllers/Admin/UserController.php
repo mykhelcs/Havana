@@ -18,7 +18,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\Uid\Ulid;
 
 class UserController extends Controller
 {
@@ -88,7 +87,7 @@ class UserController extends Controller
      */
     public function show(string $userId): Response
     {
-        $user = $this->userRepository->findById(new Ulid($userId));
+        $user = $this->userRepository->findById($userId);
 
         if (!$user) {
             abort(404, 'User not found.');
@@ -106,16 +105,15 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, string $userId): RedirectResponse
     {
-        // auth()->user() is the App\Models\User. We need its id as Ulid
-        $adminId = new Ulid((string) $request->user()->id);
-        $targetId = new Ulid($userId);
+        // auth()->user() is the App\Models\User. id is a string (UUID or legacy int)
+        $adminId = (string) $request->user()->id;
 
         $role = $request->has('role') ? UserRole::from($request->input('role')) : null;
         $status = $request->has('status') ? UserStatus::from($request->input('status')) : null;
 
         $cmd = new UpdateUserCommand(role: $role, status: $status);
 
-        $result = $this->userService->updateUser($adminId, $targetId, $cmd);
+        $result = $this->userService->updateUser($adminId, $userId, $cmd);
 
         if ($result === UserManagementError::USER_NOT_FOUND) {
             abort(404, 'User not found.');
@@ -132,20 +130,18 @@ class UserController extends Controller
      */
     public function suspend(Request $request, string $userId): RedirectResponse
     {
-        $targetId = new Ulid($userId);
-        
-        $user = $this->userRepository->findById($targetId);
+        $user = $this->userRepository->findById($userId);
         if (!$user) {
             abort(404, 'User not found.');
         }
 
-        $adminId = new Ulid((string) $request->user()->id);
+        $adminId = (string) $request->user()->id;
 
-        if ((string) $adminId === (string) $targetId) {
+        if ($adminId === $userId) {
             abort(403, 'Cannot suspend yourself.');
         }
 
-        $result = $this->userService->suspendUser($adminId, $targetId);
+        $result = $this->userService->suspendUser($adminId, $userId);
 
         if ($result === UserManagementError::USER_NOT_FOUND) {
             abort(404, 'User not found.');

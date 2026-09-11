@@ -17,7 +17,9 @@ const ADMIN_NAV = [
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const { auth, url } = usePage<SharedProps>().props;
+    const page = usePage<SharedProps>();
+    const { auth } = page.props;
+    const url = page.url;
     const user = auth.user;
 
     return (

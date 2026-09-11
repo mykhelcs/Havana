@@ -4,7 +4,6 @@ namespace App\Domain\User;
 
 use App\Enums\UserStatus;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\Uid\Ulid;
 
 class UserRepository
 {
@@ -53,13 +52,16 @@ class UserRepository
     }
 
     /**
-     * O(1) lookup by primary key UUID — Supabase uses btree index on id.
+     * O(1) lookup by primary key — Supabase uses btree index on id.
      * Returns null (not an exception) when user simply doesn't exist,
      * so controllers can use a guard clause: if (!$user) abort(404).
+     *
+     * id is a string because Supabase Auth uses UUIDs and legacy rows
+     * may have integer ids.
      */
-    public function findById(Ulid $userId): ?UserData
+    public function findById(string $userId): ?UserData
     {
-        $row = DB::table('users')->where('id', (string) $userId)->first();
+        $row = DB::table('users')->where('id', $userId)->first();
         
         if (!$row) {
             return null;
@@ -94,19 +96,19 @@ class UserRepository
             throw new \InvalidArgumentException('Email already exists.');
         }
 
-        $id = new Ulid();
+        $id = (string) \Illuminate\Support\Str::uuid();
         $now = now();
 
         DB::table('users')->insert([
-            'id' => (string) $id,
-            'name' => explode('@', $cmd->email)[0], // Provide a default name since schema requires it
-            'email' => $cmd->email,
-            'user_role' => $cmd->role->value,
-            'password' => $cmd->passwordHash,
-            'status' => UserStatus::ACTIVE->value,
-            'created_at' => $now,
-            'updated_at' => $now,
-            'last_login_at' => null,
+            'id'           => $id,
+            'name'         => explode('@', $cmd->email)[0],
+            'email'        => $cmd->email,
+            'user_role'    => $cmd->role->value,
+            'password'     => $cmd->passwordHash,
+            'status'       => UserStatus::ACTIVE->value,
+            'created_at'   => $now,
+            'updated_at'   => $now,
+            'last_login_at'=> null,
         ]);
 
         return $this->findById($id);
@@ -116,7 +118,7 @@ class UserRepository
      * Patches only the changed fields. Uses Supabase .update() with
      * the UUID filter — O(1) by PK. Never rewrites the full row.
      */
-    public function updateUser(Ulid $userId, UpdateUserCommand $cmd): UserData
+    public function updateUser(string $userId, UpdateUserCommand $cmd): UserData
     {
         $updates = [];
 
@@ -130,7 +132,7 @@ class UserRepository
 
         if (!empty($updates)) {
             $updates['updated_at'] = now();
-            DB::table('users')->where('id', (string) $userId)->update($updates);
+            DB::table('users')->where('id', $userId)->update($updates);
         }
 
         $updated = $this->findById($userId);
@@ -146,10 +148,10 @@ class UserRepository
      * Soft-delete: sets status = 'suspended' rather than deleting the row.
      * Hard deletes are irreversible — suspension is always preferred for audit.
      */
-    public function suspendUser(Ulid $userId): UserData
+    public function suspendUser(string $userId): UserData
     {
-        DB::table('users')->where('id', (string) $userId)->update([
-            'status' => UserStatus::SUSPENDED->value,
+        DB::table('users')->where('id', $userId)->update([
+            'status'     => UserStatus::SUSPENDED->value,
             'updated_at' => now(),
         ]);
 
