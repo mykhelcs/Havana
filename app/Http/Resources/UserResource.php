@@ -17,4 +17,9 @@ class UserResource
             'lastLoginAt' => $user->lastLoginAt?->toISOString(),
         ];
     }
+
+    public static function collection(array $users): array
+    {
+        return array_map(fn (UserData $user) => self::fromDomain($user), $users);
+    }
 }

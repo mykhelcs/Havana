@@ -30,13 +30,17 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'otp_expires_at'    => 'datetime',
-            'role'              => \App\Enums\UserRole::class,
+            'user_role'         => \App\Enums\UserRole::class,
+            'status'            => \App\Enums\UserStatus::class,
         ];
     }
 }

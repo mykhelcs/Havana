@@ -77,7 +77,7 @@ class OtpController extends Controller
      */
     private function redirectAfterLogin(\App\Models\User $authenticatedUser): \Illuminate\Http\RedirectResponse
     {
-        return match ($authenticatedUser->role) {
+        return match ($authenticatedUser->user_role) {
             \App\Enums\UserRole::ADMIN => redirect()->intended('/admin'),
             \App\Enums\UserRole::AGENT => redirect()->intended('/admin'),
             \App\Enums\UserRole::BUYER => redirect()->intended('/dashboard'),

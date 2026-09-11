@@ -9,7 +9,7 @@ uses(RefreshDatabase::class);
 
 it('redirects admin to /admin after login', function () {
     $user = User::factory()->create([
-        'role' => UserRole::ADMIN,
+        'user_role' => UserRole::ADMIN,
         'otp_code' => '123456',
         'otp_expires_at' => now()->addMinutes(5),
     ]);
@@ -22,7 +22,7 @@ it('redirects admin to /admin after login', function () {
 
 it('redirects buyer to /dashboard after login', function () {
     $user = User::factory()->create([
-        'role' => UserRole::BUYER,
+        'user_role' => UserRole::BUYER,
         'otp_code' => '123456',
         'otp_expires_at' => now()->addMinutes(5),
     ]);
