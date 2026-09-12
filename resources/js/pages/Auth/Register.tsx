@@ -9,6 +9,11 @@ export default function Register() {
         password_confirmation: '',
     });
 
+    const hasMinLength = data.password.length >= 8;
+    const hasMixedCase = /[a-z]/.test(data.password) && /[A-Z]/.test(data.password);
+    const hasNumber = /[0-9]/.test(data.password);
+    const hasSymbol = /[^A-Za-z0-9]/.test(data.password);
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         post('/register', {
@@ -77,6 +82,41 @@ export default function Register() {
                             required
                         />
                         {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
+
+                        <div className="mt-2 p-3 bg-amber-50/80 border border-amber-300/70 rounded-lg text-xs shadow-sm backdrop-blur-sm">
+                            <div className="flex items-center gap-1.5 font-semibold text-amber-900 mb-1.5">
+                                <svg className="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span>Password must contain:</span>
+                            </div>
+                            <ul className="space-y-1 pl-1">
+                                <li className={`flex items-center gap-1.5 transition-colors ${hasMinLength ? 'text-emerald-700 font-medium' : 'text-gray-700'}`}>
+                                    <span className={hasMinLength ? 'text-emerald-600 font-bold' : 'text-amber-500'}>
+                                        {hasMinLength ? '✓' : '•'}
+                                    </span>
+                                    <span>At least 8 characters</span>
+                                </li>
+                                <li className={`flex items-center gap-1.5 transition-colors ${hasMixedCase ? 'text-emerald-700 font-medium' : 'text-gray-700'}`}>
+                                    <span className={hasMixedCase ? 'text-emerald-600 font-bold' : 'text-amber-500'}>
+                                        {hasMixedCase ? '✓' : '•'}
+                                    </span>
+                                    <span>Uppercase and lowercase letters</span>
+                                </li>
+                                <li className={`flex items-center gap-1.5 transition-colors ${hasNumber ? 'text-emerald-700 font-medium' : 'text-gray-700'}`}>
+                                    <span className={hasNumber ? 'text-emerald-600 font-bold' : 'text-amber-500'}>
+                                        {hasNumber ? '✓' : '•'}
+                                    </span>
+                                    <span>At least one number</span>
+                                </li>
+                                <li className={`flex items-center gap-1.5 transition-colors ${hasSymbol ? 'text-emerald-700 font-medium' : 'text-gray-700'}`}>
+                                    <span className={hasSymbol ? 'text-emerald-600 font-bold' : 'text-amber-500'}>
+                                        {hasSymbol ? '✓' : '•'}
+                                    </span>
+                                    <span>At least one special symbol (!@#$%^&*)</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div className="mt-4">

@@ -62,7 +62,7 @@ export default function Login() {
                         {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
                     </div>
 
-                    <div className="block mt-4">
+                    <div className="flex items-center justify-between mt-4">
                         <label className="flex items-center">
                             <input
                                 type="checkbox"
@@ -73,6 +73,13 @@ export default function Login() {
                             />
                             <span className="ms-2 text-sm text-gray-800">Remember me</span>
                         </label>
+
+                        <Link
+                            href="/forgot-password"
+                            className="underline text-sm text-gray-800 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Forgot your password?
+                        </Link>
                     </div>
 
                     <div className="flex items-center justify-between mt-6">

@@ -57,15 +57,17 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
 
-        $user = User::create([
+        User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
+        $user = User::where('email', $request->email)->first();
+
         // Generate and save OTP
         $user->otp_code       = random_int(100000, 999999);
-        $user->otp_expires_at = now()->addMinutes(5);
+        $user->otp_expires_at = now()->addMinutes(3);
         $user->otp_attempts   = 0;
         $user->save();
 
