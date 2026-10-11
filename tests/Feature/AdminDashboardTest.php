@@ -18,16 +18,14 @@ it('renders the admin dashboard with stats', function () {
         'user_role' => UserRole::BUYER,
     ]);
 
-    DB::table('properties')->insert([
-        ['status' => 'active', 'created_at' => now(), 'updated_at' => now()],
-        ['status' => 'inactive', 'created_at' => now(), 'updated_at' => now()],
-        ['status' => 'active', 'created_at' => now(), 'updated_at' => now()],
-    ]);
+    // Create properties
+    $prop1 = \App\Models\Property::factory()->create(['status' => \App\Enums\PropertyStatus::ACTIVE]);
+    \App\Models\Property::factory()->create(['status' => \App\Enums\PropertyStatus::INACTIVE]);
+    \App\Models\Property::factory()->create(['status' => \App\Enums\PropertyStatus::ACTIVE]);
 
-    DB::table('inquiries')->insert([
-        ['status' => 'new', 'created_at' => now(), 'updated_at' => now()],
-        ['status' => 'read', 'created_at' => now(), 'updated_at' => now()],
-    ]);
+    // Create inquiries
+    \App\Models\Inquiry::factory()->create(['property_id' => $prop1->id, 'status' => \App\Enums\InquiryStatus::NEW]);
+    \App\Models\Inquiry::factory()->create(['property_id' => $prop1->id, 'status' => \App\Enums\InquiryStatus::CONTACTED]);
 
     $response = $this->actingAs($admin)->get('/admin');
 

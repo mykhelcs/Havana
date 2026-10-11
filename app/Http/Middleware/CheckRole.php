@@ -13,9 +13,20 @@ class CheckRole
      *
      * @param  Closure(Request): (Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (! $request->user() || $request->user()->user_role?->value !== $role) {
+        $user = $request->user();
+
+        if (! $user) {
+            abort(403, 'Unauthorized.');
+        }
+
+        if ($user->status === \App\Enums\UserStatus::SUSPENDED) {
+            abort(403, 'Your account is suspended.');
+        }
+
+        $userRole = $user->user_role?->value;
+        if (! in_array($userRole, $roles, true)) {
             abort(403, 'Unauthorized.');
         }
 

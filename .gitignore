@@ -27,3 +27,5 @@ yarn-error.log
 /.vscode
 /.zed
 /.agents
+*.sqlite
+*.sqlite-journal

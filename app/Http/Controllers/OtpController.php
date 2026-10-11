@@ -38,6 +38,12 @@ class OtpController extends Controller
             return back()->withErrors(['otp' => 'User not found. Please login again.']);
         }
 
+        if ($user->status === \App\Enums\UserStatus::SUSPENDED) {
+            $request->session()->forget('login_email');
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Your account has been suspended. Please contact support.']);
+        }
+
         // Check attempts first
         if ($user->otp_attempts >= 3) {
             $request->session()->forget('login_email');

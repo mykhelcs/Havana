@@ -1,14 +1,11 @@
-﻿import { Head, Link } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 
 // --- STATIC PLACEHOLDER DATA (swap for DB data in Option B) ---
 
-const featuredProperties = [
-    { id: 1, title: 'Modern Villa',     location: 'Cebu City',   price: '₱4,200,000', beds: 4, baths: 3, type: 'House',      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600' },
-    { id: 2, title: 'Studio Loft',      location: 'BGC, Taguig', price: '₱1,800,000', beds: 1, baths: 1, type: 'Condo',      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600' },
-    { id: 3, title: 'Family Home',      location: 'Davao City',  price: '₱3,500,000', beds: 3, baths: 2, type: 'House',      image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600' },
-    { id: 4, title: 'Penthouse Suite',  location: 'Makati',      price: '₱8,900,000', beds: 2, baths: 2, type: 'Condo',      image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600' },
-    { id: 5, title: 'Commercial Space', location: 'Quezon City', price: '₱6,200,000', beds: 0, baths: 2, type: 'Commercial', image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600' },
-    { id: 6, title: 'Farm Lot',         location: 'Tagaytay',    price: '₱2,100,000', beds: 0, baths: 0, type: 'Land',       image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600' },
+const defaultFeaturedProperties = [
+    { id: '1', title: 'Modern Villa',     location: 'Cebu City',   price: '₱4,200,000', beds: 4, baths: 3, type: 'House',      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600' },
+    { id: '2', title: 'Studio Loft',      location: 'BGC, Taguig', price: '₱1,800,000', beds: 1, baths: 1, type: 'Condo',      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600' },
+    { id: '3', title: 'Family Home',      location: 'Davao City',  price: '₱3,500,000', beds: 3, baths: 2, type: 'House',      image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600' },
 ];
 
 const testimonials = [
@@ -18,10 +15,10 @@ const testimonials = [
 ];
 
 const categories = [
-    { label: 'House',      icon: '🏡' },
-    { label: 'Condo',      icon: '🏢' },
-    { label: 'Commercial', icon: '🏗️' },
-    { label: 'Land',       icon: '🌿' },
+    { label: 'House',      type: 'house_and_lot', icon: '🏡' },
+    { label: 'Condo',      type: 'condominium',   icon: '🏢' },
+    { label: 'Commercial', type: 'commercial',    icon: '🏗️' },
+    { label: 'Land',       type: 'land_lot',      icon: '🌿' },
 ];
 
 const stats = [
@@ -31,47 +28,55 @@ const stats = [
     { label: 'Cities Covered',   value: '25+' },
 ];
 
-export default function Welcome() {
+type Props = {
+    featuredProperties?: any[];
+};
+
+export default function Welcome({ featuredProperties = [] }: Props) {
+    const displayListings = featuredProperties.length > 0
+        ? featuredProperties.map((p) => ({
+            id: p.id,
+            title: p.title,
+            location: `${p.city || 'Philippines'}${p.province ? ', ' + p.province : ''}`,
+            price: p.priceFormatted,
+            beds: p.bedrooms,
+            baths: p.bathrooms,
+            type: (p.propertyType || 'Property').replace('_', ' '),
+            image: p.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600',
+        }))
+        : defaultFeaturedProperties;
+
     return (
         <div className="min-h-screen flex flex-col">
-            <Head title="Havana Real Estate" />
+            <Head title="Havana Real Estate - Find Your Dream Home in the Philippines" />
 
-            {/* ═══════════════════════════════════════════════
-                HERO SECTION — full-screen background image
-            ═══════════════════════════════════════════════ */}
+            {/* HERO SECTION */}
             <div
                 className="relative min-h-screen bg-cover bg-center flex flex-col"
                 style={{ backgroundImage: 'url("/realestate.jpg")' }}
             >
-                {/* Dark overlay so text is readable */}
                 <div className="absolute inset-0 bg-black/40" />
 
-                {/* Content above overlay must be relative */}
                 <div className="relative flex flex-col min-h-screen">
-
-                    {/* ── Glassmorphism Navbar ── */}
+                    {/* Glassmorphism Navbar */}
                     <nav className="w-full bg-white/10 backdrop-blur-md border-b border-white/20 px-8 py-4">
                         <div className="max-w-6xl mx-auto flex items-center justify-between">
-
-                            {/* Left nav links */}
                             <div className="flex items-center gap-8">
                                 <Link href="/" className="text-white text-sm font-semibold tracking-widest uppercase hover:text-yellow-300 transition">
                                     Home
                                 </Link>
-                                <Link href="/about" className="text-white/80 text-sm font-semibold tracking-widest uppercase hover:text-white transition">
-                                    About
+                                <Link href="/properties" className="text-white/80 text-sm font-semibold tracking-widest uppercase hover:text-white transition">
+                                    Properties
                                 </Link>
                             </div>
 
-                            {/* Centered brand title */}
                             <span className="text-white text-2xl font-bold tracking-[0.3em] uppercase">
                                 ✦ HAVANA ✦
                             </span>
 
-                            {/* Right nav links */}
                             <div className="flex items-center gap-8">
-                                <Link href="/explore" className="text-white/80 text-sm font-semibold tracking-widest uppercase hover:text-white transition">
-                                    Explore
+                                <Link href="/dashboard" className="text-white/80 text-sm font-semibold tracking-widest uppercase hover:text-white transition">
+                                    Dashboard
                                 </Link>
                                 <Link href="/login" className="text-white/80 text-sm font-semibold tracking-widest uppercase hover:text-white transition">
                                     Login
@@ -80,41 +85,36 @@ export default function Welcome() {
                         </div>
                     </nav>
 
-                    {/* ── Hero Content ── */}
+                    {/* Hero Content */}
                     <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
-                        {/* Main brand title */}
                         <h1 className="text-white text-6xl lg:text-8xl font-bold tracking-widest uppercase drop-shadow-lg">
                             HAVANA
                         </h1>
-
-                        {/* Gold subtitle */}
                         <p className="text-yellow-300 text-xl lg:text-2xl font-light tracking-widest uppercase mt-2">
-                            Real Estate
+                            Real Estate Philippines
                         </p>
-
-                        {/* Tagline quote */}
                         <p className="text-white/80 text-lg mt-6 italic max-w-md">
                             "Find Your Place in the World."
                         </p>
 
-                        {/* ── Search Bar ── */}
-                        <div className="mt-8 w-full max-w-xl">
+                        {/* Search Bar */}
+                        <form action="/properties" method="GET" className="mt-8 w-full max-w-xl">
                             <div className="flex items-center bg-white/90 backdrop-blur-sm rounded-full px-5 py-3 shadow-xl">
                                 <span className="text-gray-400 mr-3 text-lg">🔍</span>
                                 <input
                                     type="text"
+                                    name="search"
                                     placeholder="Search by location, city, or property type..."
                                     className="flex-1 bg-transparent text-gray-800 placeholder-gray-400 focus:outline-none text-sm"
                                 />
-                                <button className="ml-3 bg-yellow-400 text-gray-900 px-5 py-1.5 rounded-full text-sm font-bold hover:bg-yellow-300 transition">
+                                <button type="submit" className="ml-3 bg-yellow-400 text-gray-900 px-5 py-1.5 rounded-full text-sm font-bold hover:bg-yellow-300 transition">
                                     Search
                                 </button>
                             </div>
-                        </div>
+                        </form>
 
-                        {/* Primary CTA */}
                         <Link
-                            href="/explore"
+                            href="/properties"
                             className="mt-6 px-8 py-3 bg-yellow-400 text-gray-900 text-sm font-bold uppercase tracking-widest rounded-full hover:bg-yellow-300 transition shadow-lg"
                         >
                             Explore Properties
@@ -167,10 +167,10 @@ export default function Welcome() {
                     <p className="text-gray-500 text-sm mb-10 text-center">Handpicked listings just for you</p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {featuredProperties.map(prop => (
+                        {displayListings.map(prop => (
                             <div key={prop.id} className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition group">
                                 {/* Property image */}
-                                <div className="overflow-hidden h-48">
+                                <div className="overflow-hidden h-48 bg-gray-200">
                                     <img
                                         src={prop.image}
                                         alt={prop.title}
@@ -180,12 +180,12 @@ export default function Welcome() {
 
                                 <div className="p-4">
                                     {/* Type badge */}
-                                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-semibold">
+                                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-semibold uppercase">
                                         {prop.type}
                                     </span>
 
                                     {/* Title & Location */}
-                                    <h3 className="font-bold text-gray-800 mt-2">{prop.title}</h3>
+                                    <h3 className="font-bold text-gray-800 mt-2 line-clamp-1">{prop.title}</h3>
                                     <p className="text-gray-500 text-sm">📍 {prop.location}</p>
 
                                     {/* Beds / Baths */}
@@ -196,10 +196,10 @@ export default function Welcome() {
 
                                     {/* Price + CTA */}
                                     <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                                        <span className="text-lg font-bold text-gray-900">{prop.price}</span>
-                                        <button className="text-sm text-yellow-600 font-semibold hover:underline">
-                                            View →
-                                        </button>
+                                        <span className="text-lg font-bold text-indigo-700">{prop.price}</span>
+                                        <Link href={`/properties/${prop.id}`} className="text-sm text-yellow-600 font-semibold hover:underline">
+                                            View Details →
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
